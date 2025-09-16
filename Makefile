@@ -94,13 +94,13 @@ publish-test: build
 	@echo "🚀 Publishing to Test PyPI..."
 	uv publish --publish-url https://test.pypi.org/legacy/
 	@echo "✅ Published to Test PyPI!"
-	@echo "💡 Test installation: pip install -i https://test.pypi.org/simple/ stack-overflow-mcp"
+	@echo "💡 Test installation: pip install -i https://test.pypi.org/simple/ stack-overflow-mcp-light"
 
 publish: build
 	@echo "🚀 Publishing to PyPI..."
 	uv publish
 	@echo "✅ Published to PyPI!"
-	@echo "💡 Install with: uvx stack-overflow-mcp"
+	@echo "💡 Install with: uvx stack-overflow-mcp-light"
 
 release: check-release
 	@echo "🚀 Starting release process..."
@@ -122,12 +122,12 @@ release: check-release
 	git push origin main; \
 	git push origin "v$$new_version"; \
 	echo "🎉 Release v$$new_version completed!"; \
-	echo "📌 Create GitHub release at: https://github.com/midodimori/stack-overflow-mcp/releases"
+	echo "📌 Create GitHub release at: https://github.com/midodimori/stack-overflow-mcp-light/releases"
 
 # Development
 run:
 	@echo "🚀 Starting Stack Overflow MCP Server..."
-	uv run stack-overflow-mcp
+	uv run stack-overflow-mcp-light
 
 # Quick development workflow
 dev: install-dev lint-fix lint test
