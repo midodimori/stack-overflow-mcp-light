@@ -15,7 +15,7 @@ make release
 ## 📋 Prerequisites Setup
 
 ### **GitHub Repository**
-1. ✅ Already configured at: https://github.com/midodimori/stack-overflow-mcp
+1. ✅ Already configured at: https://github.com/midodimori/stack-overflow-mcp-light
 2. ✅ URLs already set in `pyproject.toml`
 3. Push your code: `git push origin main`
 
@@ -26,7 +26,7 @@ Choose one of these authentication methods:
 1. Create account at [PyPI.org](https://pypi.org/account/register/)
 2. Go to https://pypi.org/manage/account/publishing/
 3. Add GitHub repository as trusted publisher:
-   - **Repository**: `midodimori/stack-overflow-mcp`
+   - **Repository**: `midodimori/stack-overflow-mcp-light`
    - **Workflow**: `publish.yml`
    - **Environment**: `pypi`
 4. No API tokens needed! 🎉
@@ -55,7 +55,7 @@ make release
 ```
 
 ### **Step 3: Create GitHub Release**
-1. Go to: https://github.com/midodimori/stack-overflow-mcp/releases
+1. Go to: https://github.com/midodimori/stack-overflow-mcp-light/releases
 2. Click "Create a new release"
 3. Select the tag created by `make release` (e.g., `v0.1.0`)
 4. Add release notes
@@ -121,7 +121,7 @@ make release                    # Retry
 ```
 
 **GitHub Actions fails**
-- Check https://github.com/midodimori/stack-overflow-mcp/actions
+- Check https://github.com/midodimori/stack-overflow-mcp-light/actions
 - Ensure PyPI trusted publishing is set up correctly
 - Verify repository settings match PyPI configuration
 
@@ -158,9 +158,9 @@ After successful release:
 ## 🔗 Resources
 
 - **Your Package**: https://pypi.org/project/stack-overflow-mcp-light/
-- **Repository**: https://github.com/midodimori/stack-overflow-mcp
-- **Releases**: https://github.com/midodimori/stack-overflow-mcp/releases
-- **Actions**: https://github.com/midodimori/stack-overflow-mcp/actions
+- **Repository**: https://github.com/midodimori/stack-overflow-mcp-light
+- **Releases**: https://github.com/midodimori/stack-overflow-mcp-light/releases
+- **Actions**: https://github.com/midodimori/stack-overflow-mcp-light/actions
 
 ---
 

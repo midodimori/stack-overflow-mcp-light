@@ -27,7 +27,7 @@ dependencies = [
 ]
 
 [project.scripts]
-stack-overflow-mcp = "stack_overflow_mcp_light.server:main"
+stack-overflow-mcp-light = "stack_overflow_mcp_light.server:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -48,7 +48,7 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/midodimori/stack-overflow-mcp"
-Repository = "https://github.com/midodimori/stack-overflow-mcp"
-Issues = "https://github.com/midodimori/stack-overflow-mcp/issues"
-Documentation = "https://github.com/midodimori/stack-overflow-mcp#readme"
+Homepage = "https://github.com/midodimori/stack-overflow-mcp-light"
+Repository = "https://github.com/midodimori/stack-overflow-mcp-light"
+Issues = "https://github.com/midodimori/stack-overflow-mcp-light/issues"
+Documentation = "https://github.com/midodimori/stack-overflow-mcp-light#readme"

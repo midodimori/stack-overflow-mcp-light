@@ -104,7 +104,7 @@ Add to your Claude Desktop `claude_desktop_config.json`:
     "stack-overflow": {
       "command": "uv",
       "args": ["run", "stack-overflow-mcp-light"],
-      "cwd": "/path/to/stack-overflow-mcp",
+      "cwd": "/path/to/stack-overflow-mcp-light",
       "env": {
         "STACK_EXCHANGE_API_KEY": "your_api_key_here",
         "STACK_OVERFLOW_MCP_SHOW_LOGS": "true"
@@ -190,8 +190,8 @@ uv run pytest tests/test_server.py::TestQuestionTools -v
 
 ```bash
 # Clone the repository
-git clone https://github.com/midodimori/stack-overflow-mcp.git
-cd stack-overflow-mcp
+git clone https://github.com/midodimori/stack-overflow-mcp-light.git
+cd stack-overflow-mcp-light
 
 # Install with development dependencies
 make install-dev
@@ -215,7 +215,7 @@ make help
 ### Project Structure
 
 ```
-stack-overflow-mcp/
+stack-overflow-mcp-light/
 ├── src/stack_overflow_mcp_light/
 │   ├── __init__.py
 │   ├── server.py          # MCP server implementation
