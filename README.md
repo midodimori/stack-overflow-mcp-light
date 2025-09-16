@@ -20,21 +20,21 @@ A Model Context Protocol (MCP) server that provides comprehensive tools for inte
 ### Using uvx (Recommended)
 
 ```bash
-uvx stack-overflow-mcp
+uvx stack-overflow-mcp-light
 ```
 
 ### Using uv
 
 ```bash
-uv add stack-overflow-mcp
-uv run stack-overflow-mcp
+uv add stack-overflow-mcp-light
+uv run stack-overflow-mcp-light
 ```
 
 ### Using pip
 
 ```bash
-pip install stack-overflow-mcp
-stack-overflow-mcp
+pip install stack-overflow-mcp-light
+stack-overflow-mcp-light
 ```
 
 ## ⚙️ Configuration
@@ -67,7 +67,7 @@ Add to your Claude Desktop `claude_desktop_config.json`:
   "mcpServers": {
     "stack-overflow": {
       "command": "uvx",
-      "args": ["--no-progress", "stack-overflow-mcp"],
+      "args": ["--no-progress", "stack-overflow-mcp-light"],
       "env": {
         "STACK_EXCHANGE_API_KEY": "your_api_key_here",
         "STACK_OVERFLOW_MCP_SHOW_LOGS": "false"
@@ -86,7 +86,7 @@ Add to your Claude Desktop `claude_desktop_config.json`:
   "mcpServers": {
     "stack-overflow": {
       "command": "uv",
-      "args": ["run", "--with", "stack-overflow-mcp", "stack-overflow-mcp"],
+      "args": ["run", "--with", "stack-overflow-mcp-light", "stack-overflow-mcp-light"],
       "env": {
         "STACK_EXCHANGE_API_KEY": "your_api_key_here",
         "STACK_OVERFLOW_MCP_SHOW_LOGS": "false"
@@ -103,7 +103,7 @@ Add to your Claude Desktop `claude_desktop_config.json`:
   "mcpServers": {
     "stack-overflow": {
       "command": "uv",
-      "args": ["run", "stack-overflow-mcp"],
+      "args": ["run", "stack-overflow-mcp-light"],
       "cwd": "/path/to/stack-overflow-mcp",
       "env": {
         "STACK_EXCHANGE_API_KEY": "your_api_key_here",
@@ -216,7 +216,7 @@ make help
 
 ```
 stack-overflow-mcp/
-├── src/stack_overflow_mcp/
+├── src/stack_overflow_mcp_light/
 │   ├── __init__.py
 │   ├── server.py          # MCP server implementation
 │   ├── models.py          # Pydantic models

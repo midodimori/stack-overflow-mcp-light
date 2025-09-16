@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 from fastmcp import FastMCP
 
-from stack_overflow_mcp.server import main, mcp
+from stack_overflow_mcp_light.server import main, mcp
 
 
 class TestMCPServerIntegration:
@@ -42,8 +42,8 @@ class TestMCPServerIntegration:
         assert registered_tools == expected_tools
 
     @patch.dict(os.environ, {"STACK_EXCHANGE_API_KEY": "test_key"})
-    @patch("stack_overflow_mcp.server.mcp.run")
-    @patch("stack_overflow_mcp.server.logger")
+    @patch("stack_overflow_mcp_light.server.mcp.run")
+    @patch("stack_overflow_mcp_light.server.logger")
     def test_main_with_env_vars(self, mock_logger, mock_run):
         """Test main function with API key environment variable."""
         main()
@@ -54,8 +54,8 @@ class TestMCPServerIntegration:
         mock_run.assert_called_once()
 
     @patch.dict(os.environ, {}, clear=True)
-    @patch("stack_overflow_mcp.server.mcp.run")
-    @patch("stack_overflow_mcp.server.logger")
+    @patch("stack_overflow_mcp_light.server.mcp.run")
+    @patch("stack_overflow_mcp_light.server.logger")
     def test_main_without_env_vars(self, mock_logger, mock_run):
         """Test main function without API key environment variable."""
         main()

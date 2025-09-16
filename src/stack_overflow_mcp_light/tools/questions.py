@@ -2,8 +2,8 @@
 
 from typing import Any, Dict, Optional
 
-from stack_overflow_mcp.logging_config import get_logger
-from stack_overflow_mcp.tools.base_client import BaseStackExchangeClient
+from stack_overflow_mcp_light.logging_config import get_logger
+from stack_overflow_mcp_light.tools.base_client import BaseStackExchangeClient
 
 logger = get_logger(__name__)
 

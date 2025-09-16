@@ -4,22 +4,22 @@ from unittest.mock import patch
 
 import pytest
 
-from stack_overflow_mcp.models import (
+from stack_overflow_mcp_light.models import (
     AnswerDetailsRequest,
     AnswerSearchRequest,
     QuestionDetailsRequest,
     QuestionsByTagRequest,
     QuestionSearchRequest,
 )
-from stack_overflow_mcp.server import mcp
+from stack_overflow_mcp_light.server import mcp
 
 
 @pytest.fixture
 def mock_clients():
     """Create mock specialized clients."""
     with (
-        patch("stack_overflow_mcp.server.questions_client") as mock_questions,
-        patch("stack_overflow_mcp.server.answers_client") as mock_answers,
+        patch("stack_overflow_mcp_light.server.questions_client") as mock_questions,
+        patch("stack_overflow_mcp_light.server.answers_client") as mock_answers,
     ):
         yield {"questions": mock_questions, "answers": mock_answers}
 

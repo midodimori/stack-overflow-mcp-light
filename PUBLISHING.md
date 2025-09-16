@@ -96,10 +96,10 @@ After publishing:
 
 ```bash
 # Test your published package
-uvx stack-overflow-mcp
+uvx stack-overflow-mcp-light
 
 # Alternative
-pip install stack-overflow-mcp
+pip install stack-overflow-mcp-light
 ```
 
 ## 🚨 Troubleshooting
@@ -150,14 +150,14 @@ make release  # → 1.0.0 (stable)
 
 After successful release:
 
-1. ✅ Verify: https://pypi.org/project/stack-overflow-mcp/
-2. ✅ Test: `uvx stack-overflow-mcp`
+1. ✅ Verify: https://pypi.org/project/stack-overflow-mcp-light/
+2. ✅ Test: `uvx stack-overflow-mcp-light`
 3. ✅ Update README badges if needed
 4. ✅ Share with the community!
 
 ## 🔗 Resources
 
-- **Your Package**: https://pypi.org/project/stack-overflow-mcp/
+- **Your Package**: https://pypi.org/project/stack-overflow-mcp-light/
 - **Repository**: https://github.com/midodimori/stack-overflow-mcp
 - **Releases**: https://github.com/midodimori/stack-overflow-mcp/releases
 - **Actions**: https://github.com/midodimori/stack-overflow-mcp/actions

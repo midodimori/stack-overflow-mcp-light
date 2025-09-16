@@ -1,5 +1,5 @@
 [project]
-name = "stack-overflow-mcp"
+name = "stack-overflow-mcp-light"
 version = "1.0.1"
 description = "A server that exposes a set of tools for interacting with Stack Overflow API. It provides functionality for searching questions, answers, tags, and retrieving detailed information from Stack Overflow."
 readme = "README.md"
@@ -27,7 +27,7 @@ dependencies = [
 ]
 
 [project.scripts]
-stack-overflow-mcp = "stack_overflow_mcp.server:main"
+stack-overflow-mcp = "stack_overflow_mcp_light.server:main"
 
 [build-system]
 requires = ["hatchling"]

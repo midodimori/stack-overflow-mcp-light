@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional
 
 import httpx
 
-from stack_overflow_mcp.logging_config import get_logger
+from stack_overflow_mcp_light.logging_config import get_logger
 
 logger = get_logger(__name__)
 

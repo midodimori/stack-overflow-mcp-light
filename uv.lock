@@ -1359,7 +1359,7 @@ wheels = [
 ]
 
 [[package]]
-name = "stack-overflow-mcp"
+name = "stack-overflow-mcp-light"
 version = "1.0.1"
 source = { editable = "." }
 dependencies = [

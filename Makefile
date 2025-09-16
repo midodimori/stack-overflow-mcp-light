@@ -41,7 +41,7 @@ test:
 	@echo "✅ Tests passed!"
 
 test-cov:
-	uv run --with pytest --with pytest-asyncio --with pytest-mock --with pytest-cov -- pytest tests --cov=stack_overflow_mcp --cov-report=html --cov-report=term
+	uv run --with pytest --with pytest-asyncio --with pytest-mock --with pytest-cov -- pytest tests --cov=stack_overflow_mcp_light --cov-report=html --cov-report=term
 	@echo "✅ Tests with coverage completed!"
 
 lint:

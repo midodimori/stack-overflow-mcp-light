@@ -30,7 +30,7 @@ def setup_logging(
     """
     if log_file is None:
         log_dir = tempfile.gettempdir()
-        log_file = os.path.join(log_dir, "stack_overflow_mcp.log")
+        log_file = os.path.join(log_dir, "stack_overflow_mcp_light.log")
 
     formatter = logging.Formatter(
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

@@ -5,16 +5,16 @@ from typing import Any, Dict
 
 from fastmcp import FastMCP
 
-from stack_overflow_mcp.logging_config import get_logger, setup_logging
-from stack_overflow_mcp.models import (
+from stack_overflow_mcp_light.logging_config import get_logger, setup_logging
+from stack_overflow_mcp_light.models import (
     AnswerDetailsRequest,
     AnswerSearchRequest,
     QuestionDetailsRequest,
     QuestionsByTagRequest,
     QuestionSearchRequest,
 )
-from stack_overflow_mcp.tools.answers import AnswersClient
-from stack_overflow_mcp.tools.questions import QuestionsClient
+from stack_overflow_mcp_light.tools.answers import AnswersClient
+from stack_overflow_mcp_light.tools.questions import QuestionsClient
 
 logger = get_logger(__name__)
 

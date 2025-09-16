@@ -65,7 +65,7 @@ jobs:
     if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.publish_to_pypi)
     environment:
       name: pypi
-      url: https://pypi.org/p/stack-overflow-mcp/
+      url: https://pypi.org/p/stack-overflow-mcp-light/
     permissions:
       id-token: write  # For trusted publishing
       contents: read
