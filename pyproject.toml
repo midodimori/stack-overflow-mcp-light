@@ -1,6 +1,6 @@
 [project]
 name = "stack-overflow-mcp-light"
-version = "1.0.3"
+version = "1.0.4"
 description = "A server that exposes a set of tools for interacting with Stack Overflow API. It provides functionality for searching questions, answers, tags, and retrieving detailed information from Stack Overflow."
 readme = "README.md"
 requires-python = ">=3.11"
