@@ -152,12 +152,7 @@ Get answers for a specific question.
 - **Input**: `question_id`
 - **Output**: All answers for the specified question
 
-### 💬 Answer Tools (3 tools)
-
-#### `search_answers`
-Search Stack Overflow answers using text search.
-- **Input**: `q` (optional search query), `sort`, `order`, `page`, `page_size`
-- **Output**: Search results with answers matching the query
+### 💬 Answer Tools (2 tools)
 
 #### `get_answer_details`
 Get detailed information about a specific answer.

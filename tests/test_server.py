@@ -6,7 +6,6 @@ import pytest
 
 from stack_overflow_mcp_light.models import (
     AnswerDetailsRequest,
-    AnswerSearchRequest,
     QuestionDetailsRequest,
     QuestionsByTagRequest,
     QuestionSearchRequest,
@@ -131,21 +130,6 @@ class TestAnswerTools:
     """Test answer-related MCP tools."""
 
     @pytest.mark.asyncio
-    async def test_search_answers(self, mock_clients):
-        """Test search_answers tool."""
-        mock_clients["answers"].search_answers.return_value = {
-            "items": [],
-            "has_more": False,
-        }
-
-        request = AnswerSearchRequest(q="python")
-        tool_func = mcp._tool_manager._tools["search_answers"].fn
-        result = await tool_func(request)
-
-        mock_clients["answers"].search_answers.assert_called_once()
-        assert "items" in result or "error" in result
-
-    @pytest.mark.asyncio
     async def test_get_answer_details(self, mock_clients):
         """Test get_answer_details tool."""
         mock_clients["answers"].get_answer_details.return_value = {
@@ -205,7 +189,6 @@ class TestServerStructure:
             "get_questions_by_tag",
             "get_question_answers",
             # Answer tools
-            "search_answers",
             "get_answer_details",
             "get_top_answers",
         ]
@@ -220,13 +203,13 @@ class TestServerStructure:
     def test_error_handling_pattern(self, mock_clients):
         """Test that all tools follow the same error handling pattern."""
         mock_clients["questions"].search_questions.side_effect = Exception("Test error")
-        mock_clients["answers"].search_answers.side_effect = Exception("Test error")
+        mock_clients["answers"].get_answer_details.side_effect = Exception("Test error")
 
         question_request = QuestionSearchRequest(q="test")
         question_tool = mcp._tool_manager._tools["search_questions"].fn
 
-        answer_request = AnswerSearchRequest(q="test")
-        answer_tool = mcp._tool_manager._tools["search_answers"].fn
+        answer_request = AnswerDetailsRequest(answer_id=123)
+        answer_tool = mcp._tool_manager._tools["get_answer_details"].fn
 
         import asyncio
 

@@ -8,7 +8,6 @@ from fastmcp import FastMCP
 from stack_overflow_mcp_light.logging_config import get_logger, setup_logging
 from stack_overflow_mcp_light.models import (
     AnswerDetailsRequest,
-    AnswerSearchRequest,
     QuestionDetailsRequest,
     QuestionsByTagRequest,
     QuestionSearchRequest,
@@ -122,30 +121,6 @@ async def get_question_answers(request: QuestionDetailsRequest) -> Dict[str, Any
         )
     except Exception as e:
         logger.error(f"Error getting question answers: {e}")
-        return {"error": str(e)}
-
-
-@mcp.tool()
-async def search_answers(request: AnswerSearchRequest) -> Dict[str, Any]:
-    """
-    Search Stack Overflow answers using text search.
-
-    Args:
-        request: Answer search request with query and pagination
-
-    Returns:
-        Search results with answers matching the query
-    """
-    try:
-        return await answers_client.search_answers(
-            q=request.q,
-            sort=request.sort.value,
-            order=request.order.value,
-            page=request.page,
-            page_size=request.page_size,
-        )
-    except Exception as e:
-        logger.error(f"Error searching answers: {e}")
         return {"error": str(e)}
 
 

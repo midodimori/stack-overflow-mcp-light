@@ -15,43 +15,6 @@ class AnswersClient(BaseStackExchangeClient):
         """Initialize the answers client."""
         super().__init__()
 
-    async def search_answers(
-        self,
-        q: Optional[str] = None,
-        sort: str = "activity",
-        order: str = "desc",
-        page: int = 1,
-        page_size: int = 30,
-    ) -> Dict[str, Any]:
-        """
-        Search answers using text search.
-
-        Args:
-            q: Free-form text search
-            sort: Sort criteria
-            order: Sort order
-            page: Page number
-            page_size: Items per page
-
-        Returns:
-            Search results with answers
-        """
-        params = {"sort": sort, "order": order, "filter": "!nKzQUR3Egv"}  # Include body
-
-        if q:
-            params["q"] = q
-
-        try:
-            endpoint = "/search/answers" if q else "/answers"
-
-            logger.info(f"Searching answers with query: {q or 'all answers'}")
-
-            return await self._paginated_request(endpoint, params, page, page_size)
-
-        except Exception as e:
-            logger.error(f"Error searching answers: {e}")
-            raise
-
     async def get_answer_details(
         self, answer_id: int, include_body: bool = True, include_comments: bool = False
     ) -> Dict[str, Any]:

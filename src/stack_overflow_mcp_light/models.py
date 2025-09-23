@@ -84,13 +84,6 @@ class QuestionsByTagRequest(BaseRequest):
     )
 
 
-class AnswerSearchRequest(BaseRequest):
-    """Request model for searching answers."""
-
-    q: Optional[str] = Field(default=None, description="Free-form text search")
-    sort: AnswerSort = Field(default=AnswerSort.ACTIVITY, description="Sort criteria")
-
-
 class AnswerDetailsRequest(BaseModel):
     """Request model for getting answer details."""
 

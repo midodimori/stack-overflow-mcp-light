@@ -25,7 +25,6 @@ class TestMCPServerIntegration:
             "get_questions_by_tag",
             "get_question_answers",
             # Answer tools
-            "search_answers",
             "get_answer_details",
             "get_top_answers",
         }
