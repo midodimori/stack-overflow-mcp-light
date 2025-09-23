@@ -32,12 +32,14 @@ class AnswersClient(BaseStackExchangeClient):
         params = {}
 
         # Build filter parameter for what to include
-        if include_body:
-            params["filter"] = "!nKzQUR3Egv"  # Include body
-
-        if include_comments:
-            # Use filter that includes comments
-            params["filter"] = "!)rTkrXnCGaR.8sVt"
+        if include_body and include_comments:
+            params["filter"] = "withbody"  # Built-in filter for body content
+        elif include_body:
+            params["filter"] = "withbody"  # Built-in filter for body content
+        elif include_comments:
+            params["filter"] = "default"  # Default filter
+        else:
+            params["filter"] = "default"  # Default filter
 
         try:
             endpoint = f"/answers/{answer_id}"
@@ -73,11 +75,14 @@ class AnswersClient(BaseStackExchangeClient):
         params = {}
 
         # Build filter parameter
-        if include_body:
-            params["filter"] = "!nKzQUR3Egv"
-
-        if include_comments:
-            params["filter"] = "!)rTkrXnCGaR.8sVt"
+        if include_body and include_comments:
+            params["filter"] = "withbody"  # Built-in filter for body content
+        elif include_body:
+            params["filter"] = "withbody"  # Built-in filter for body content
+        elif include_comments:
+            params["filter"] = "default"  # Default filter
+        else:
+            params["filter"] = "default"  # Default filter
 
         try:
             # Join IDs with semicolons for vectorized request
@@ -113,7 +118,7 @@ class AnswersClient(BaseStackExchangeClient):
         Returns:
             Top answers
         """
-        params = {"sort": sort, "order": order, "filter": "!nKzQUR3Egv"}
+        params = {"sort": sort, "order": order, "filter": "withbody"}
 
         if min_votes is not None:
             params["min"] = str(min_votes)
