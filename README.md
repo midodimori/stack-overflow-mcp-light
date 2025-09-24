@@ -9,11 +9,11 @@ A Model Context Protocol (MCP) server that provides comprehensive tools for inte
 ## 🚀 Features
 
 - **Question Search** - Advanced search with multiple filters and sorting options
-- **Question Details** - Get comprehensive information including answers and comments
-- **Answer Search** - Find and retrieve detailed answer information
-- **Tag Support** - Search questions by specific tags
-- **Type Safety** - Full Pydantic validation for all inputs
-- **Error Handling** - Comprehensive error reporting and logging
+- **Question Details** - Get comprehensive information including answers with body content
+- **Tag-based Search** - Find questions by specific tags
+- **Top Answers** - Retrieve highly-voted answers from the community
+- **Type Safety** - Full Pydantic validation with structured response models
+- **Error Handling** - Comprehensive error reporting and graceful failure modes
 
 ## 📦 Installation
 
@@ -117,7 +117,7 @@ Add to your Claude Desktop `claude_desktop_config.json`:
 
 ## 🛠️ Available Tools
 
-### ❓ Question Tools (4 tools)
+### ❓ Question Tools (3 tools)
 
 #### `search_questions`
 Search Stack Overflow questions with advanced filters.
@@ -135,34 +135,41 @@ Search Stack Overflow questions with advanced filters.
   - `order` - Sort order ("asc" or "desc")
   - `page` - Page number (1-25)
   - `page_size` - Items per page (1-100)
-- **Output**: Search results with questions matching criteria
+- **Output**: Array of question items with essential fields:
+  - `question_id` - Question ID
+  - `is_answered` - Whether the question has answers
+  - `score` - Question score
+  - `link` - Link to the question
+  - `title` - Question title
 
-#### `get_question_details`
-Get detailed information about a specific question.
-- **Input**: `question_id`, `include_body` (boolean), `include_comments` (boolean), `include_answers` (boolean)
-- **Output**: Comprehensive question information including body, answers, and optionally comments
+#### `fetch_question_answers`
+Fetch a specific question, always including answers with body content sorted by the specified criteria.
+- **Input**: Question details request including:
+  - `question_id` - Question ID (required)
+  - `sort` - Answer sort criteria ("activity", "votes", "creation") - defaults to "votes"
+  - `order` - Sort order ("asc" or "desc") - defaults to "desc"
+  - `page_size` - Maximum number of answers to return (1-100) - defaults to 30
+- **Output**: QuestionItem with detailed information including:
+  - `question_id` - Question ID
+  - `is_answered` - Whether the question has answers
+  - `score` - Question score
+  - `link` - Link to the question
+  - `title` - Question title
+  - `answers` - Array of AnswerItem objects with:
+    - `answer_id` - Answer ID
+    - `is_accepted` - Whether the answer is accepted
+    - `score` - Answer score
+    - `body` - Answer body content
 
-#### `get_questions_by_tag`
-Get questions that have a specific tag.
+#### `search_questions_by_tag`
+Search questions that have a specific tag.
 - **Input**: `tag` (tag name), `sort`, `order`, `page`, `page_size`
-- **Output**: Questions with the specified tag
-
-#### `get_question_answers`
-Get answers for a specific question.
-- **Input**: `question_id`
-- **Output**: All answers for the specified question
-
-### 💬 Answer Tools (2 tools)
-
-#### `get_answer_details`
-Get detailed information about a specific answer.
-- **Input**: `answer_id`, `include_body` (boolean), `include_comments` (boolean)
-- **Output**: Detailed answer information including body and optionally comments
-
-#### `get_top_answers`
-Get top-voted answers from Stack Overflow.
-- **Input**: None (uses default sorting by votes)
-- **Output**: Top answers sorted by vote count
+- **Output**: Array of question items with essential fields:
+  - `question_id` - Question ID
+  - `is_answered` - Whether the question has answers
+  - `score` - Question score
+  - `link` - Link to the question
+  - `title` - Question title
 
 ## 🧪 Testing
 
@@ -214,13 +221,15 @@ stack-overflow-mcp-light/
 ├── src/stack_overflow_mcp_light/
 │   ├── __init__.py
 │   ├── server.py          # MCP server implementation
-│   ├── models.py          # Pydantic models
 │   ├── logging_config.py  # Logging configuration
+│   ├── models/            # Pydantic models
+│   │   ├── __init__.py
+│   │   ├── requests.py    # Request models
+│   │   └── responses.py   # Response models
 │   └── tools/             # Tool implementations
 │       ├── __init__.py
 │       ├── base_client.py # Base client for Stack Exchange API
-│       ├── questions.py   # Question search and retrieval tools
-│       └── answers.py     # Answer search and retrieval tools
+│       └── questions.py   # Question search and retrieval tools
 ├── tests/
 │   ├── test_server.py     # Tool function tests
 │   └── test_mcp_integration.py  # MCP integration tests

@@ -4,23 +4,20 @@ from unittest.mock import patch
 
 import pytest
 
-from stack_overflow_mcp_light.models import (
-    AnswerDetailsRequest,
-    QuestionDetailsRequest,
+from stack_overflow_mcp_light.models.requests import (
+    QuestionAnswersFetchRequest,
     QuestionsByTagRequest,
     QuestionSearchRequest,
 )
+from stack_overflow_mcp_light.models.responses import AnswerItem, QuestionItem
 from stack_overflow_mcp_light.server import mcp
 
 
 @pytest.fixture
 def mock_clients():
     """Create mock specialized clients."""
-    with (
-        patch("stack_overflow_mcp_light.server.questions_client") as mock_questions,
-        patch("stack_overflow_mcp_light.server.answers_client") as mock_answers,
-    ):
-        yield {"questions": mock_questions, "answers": mock_answers}
+    with patch("stack_overflow_mcp_light.server.questions_client") as mock_questions:
+        yield {"questions": mock_questions}
 
 
 class TestQuestionTools:
@@ -29,18 +26,21 @@ class TestQuestionTools:
     @pytest.mark.asyncio
     async def test_search_questions(self, mock_clients):
         """Test search_questions tool."""
-        mock_clients["questions"].search_questions.return_value = {
-            "items": [
-                {
-                    "question_id": 12345,
-                    "title": "How to use async/await in Python?",
-                    "tags": ["python", "asyncio"],
-                    "score": 42,
-                }
-            ],
-            "has_more": False,
-            "quota_remaining": 9999,
-        }
+        mock_response = [
+            QuestionItem(
+                question_id=12345,
+                title="How to use async/await in Python?",
+                score=42,
+                is_answered=True,
+                link="https://stackoverflow.com/questions/12345",
+            )
+        ]
+
+        # Make the mock return an awaitable (coroutine)
+        async def mock_search_questions(*args, **kwargs):
+            return mock_response
+
+        mock_clients["questions"].search_questions = mock_search_questions
 
         request = QuestionSearchRequest(
             q="asyncio", tagged="python", page=1, page_size=10
@@ -48,8 +48,9 @@ class TestQuestionTools:
         tool_func = mcp._tool_manager._tools["search_questions"].fn
         result = await tool_func(request)
 
-        mock_clients["questions"].search_questions.assert_called_once()
-        assert "items" in result or "error" in result
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert result[0].question_id == 12345
 
     @pytest.mark.asyncio
     async def test_search_questions_error(self, mock_clients):
@@ -60,114 +61,105 @@ class TestQuestionTools:
         tool_func = mcp._tool_manager._tools["search_questions"].fn
         result = await tool_func(request)
 
-        assert "error" in result
-        assert result["error"] == "API Error"
+        assert isinstance(result, list)
+        assert len(result) == 0
 
     @pytest.mark.asyncio
-    async def test_get_question_details(self, mock_clients):
-        """Test get_question_details tool."""
-        mock_clients["questions"].get_question_details.return_value = {
-            "items": [
-                {
-                    "question_id": 12345,
-                    "title": "Test Question",
-                    "body": "Question body content",
-                    "answers": [
-                        {"answer_id": 67890, "body": "Answer content", "score": 10}
-                    ],
-                }
-            ]
-        }
-
-        request = QuestionDetailsRequest(
-            question_id=12345, include_body=True, include_answers=True
+    async def test_fetch_question_answers(self, mock_clients):
+        """Test fetch_question_answers tool."""
+        mock_response = QuestionItem(
+            question_id=12345,
+            title="Test Question",
+            score=42,
+            is_answered=True,
+            link="https://stackoverflow.com/questions/12345",
         )
-        tool_func = mcp._tool_manager._tools["get_question_details"].fn
+        # Set answers as extra field (allowed by model_config)
+        mock_response.answers = [
+            AnswerItem(
+                answer_id=67890, body="Answer content", score=10, is_accepted=True
+            )
+        ]
+
+        # Make the mock return an awaitable (coroutine)
+        async def mock_fetch_question_answers(*args, **kwargs):
+            return mock_response
+
+        mock_clients["questions"].fetch_question_answers = mock_fetch_question_answers
+
+        request = QuestionAnswersFetchRequest(question_id=12345)
+        tool_func = mcp._tool_manager._tools["fetch_question_answers"].fn
         result = await tool_func(request)
 
-        mock_clients["questions"].get_question_details.assert_called_once_with(
-            question_id=12345,
-            include_body=True,
-            include_comments=False,
-            include_answers=True,
-        )
-        assert "items" in result or "error" in result
+        assert isinstance(result, QuestionItem)
+        assert result.question_id == 12345
+        assert result.answers is not None
+        assert len(result.answers) == 1
+        assert result.answers[0].answer_id == 67890
+        assert result.answers[0].body == "Answer content"
 
     @pytest.mark.asyncio
-    async def test_get_questions_by_tag(self, mock_clients):
-        """Test get_questions_by_tag tool."""
-        mock_clients["questions"].get_questions_by_tag.return_value = {
-            "items": [],
-            "has_more": False,
-        }
+    async def test_fetch_question_answers_with_sorting(self, mock_clients):
+        """Test fetch_question_answers tool with custom sorting parameters."""
+        mock_response = QuestionItem(
+            question_id=12345,
+            title="Test Question",
+            score=42,
+            is_answered=True,
+            link="https://stackoverflow.com/questions/12345",
+        )
+        # Set answers as extra field (allowed by model_config)
+        mock_response.answers = [
+            AnswerItem(
+                answer_id=67890, body="Answer content", score=10, is_accepted=True
+            )
+        ]
+
+        # Make the mock return an awaitable (coroutine)
+        async def mock_fetch_question_answers(*args, **kwargs):
+            return mock_response
+
+        mock_clients["questions"].fetch_question_answers = mock_fetch_question_answers
+
+        from stack_overflow_mcp_light.models.requests import AnswerSort, SortOrder
+
+        request = QuestionAnswersFetchRequest(
+            question_id=12345, sort=AnswerSort.ACTIVITY, order=SortOrder.ASC
+        )
+        tool_func = mcp._tool_manager._tools["fetch_question_answers"].fn
+        result = await tool_func(request)
+
+        assert isinstance(result, QuestionItem)
+        assert result.question_id == 12345
+        assert result.answers is not None
+        assert len(result.answers) == 1
+
+    @pytest.mark.asyncio
+    async def test_search_questions_by_tag(self, mock_clients):
+        """Test search_questions_by_tag tool."""
+        mock_response = [
+            QuestionItem(
+                question_id=67890,
+                title="Python best practices",
+                score=25,
+                is_answered=True,
+                link="https://stackoverflow.com/questions/67890",
+            )
+        ]
+
+        # Make the mock return an awaitable (coroutine)
+        async def mock_search_questions_by_tag(*args, **kwargs):
+            return mock_response
+
+        mock_clients["questions"].search_questions_by_tag = mock_search_questions_by_tag
 
         request = QuestionsByTagRequest(tag="python")
-        tool_func = mcp._tool_manager._tools["get_questions_by_tag"].fn
+        tool_func = mcp._tool_manager._tools["search_questions_by_tag"].fn
         result = await tool_func(request)
 
-        mock_clients["questions"].get_questions_by_tag.assert_called_once()
-        assert "items" in result or "error" in result
-
-    @pytest.mark.asyncio
-    async def test_get_question_answers(self, mock_clients):
-        """Test get_question_answers tool."""
-        mock_clients["questions"].get_question_answers.return_value = {
-            "items": [],
-            "has_more": False,
-        }
-
-        request = QuestionDetailsRequest(question_id=12345)
-        tool_func = mcp._tool_manager._tools["get_question_answers"].fn
-        result = await tool_func(request)
-
-        mock_clients["questions"].get_question_answers.assert_called_once_with(
-            question_id=12345, page=1, page_size=30
-        )
-        assert "items" in result or "error" in result
-
-
-class TestAnswerTools:
-    """Test answer-related MCP tools."""
-
-    @pytest.mark.asyncio
-    async def test_get_answer_details(self, mock_clients):
-        """Test get_answer_details tool."""
-        mock_clients["answers"].get_answer_details.return_value = {
-            "items": [
-                {
-                    "answer_id": 67890,
-                    "body": "Answer content",
-                    "score": 10,
-                }
-            ]
-        }
-
-        request = AnswerDetailsRequest(answer_id=67890, include_body=True)
-        tool_func = mcp._tool_manager._tools["get_answer_details"].fn
-        result = await tool_func(request)
-
-        mock_clients["answers"].get_answer_details.assert_called_once_with(
-            answer_id=67890,
-            include_body=True,
-            include_comments=False,
-        )
-        assert "items" in result or "error" in result
-
-    @pytest.mark.asyncio
-    async def test_get_top_answers(self, mock_clients):
-        """Test get_top_answers tool."""
-        mock_clients["answers"].get_top_answers.return_value = {
-            "items": [],
-            "has_more": False,
-        }
-
-        tool_func = mcp._tool_manager._tools["get_top_answers"].fn
-        result = await tool_func()
-
-        mock_clients["answers"].get_top_answers.assert_called_once_with(
-            sort="votes", order="desc", page=1, page_size=30
-        )
-        assert "items" in result or "error" in result
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert result[0].question_id == 67890
 
 
 class TestServerStructure:
@@ -183,14 +175,9 @@ class TestServerStructure:
         tools = list(mcp._tool_manager._tools.keys())
 
         expected_tools = [
-            # Question tools
             "search_questions",
-            "get_question_details",
-            "get_questions_by_tag",
-            "get_question_answers",
-            # Answer tools
-            "get_answer_details",
-            "get_top_answers",
+            "fetch_question_answers",
+            "search_questions_by_tag",
         ]
 
         for tool in expected_tools:
@@ -203,24 +190,28 @@ class TestServerStructure:
     def test_error_handling_pattern(self, mock_clients):
         """Test that all tools follow the same error handling pattern."""
         mock_clients["questions"].search_questions.side_effect = Exception("Test error")
-        mock_clients["answers"].get_answer_details.side_effect = Exception("Test error")
+        mock_clients["questions"].fetch_question_answers.side_effect = Exception(
+            "Test error"
+        )
 
-        question_request = QuestionSearchRequest(q="test")
-        question_tool = mcp._tool_manager._tools["search_questions"].fn
+        question_search_request = QuestionSearchRequest(q="test")
+        search_tool = mcp._tool_manager._tools["search_questions"].fn
 
-        answer_request = AnswerDetailsRequest(answer_id=123)
-        answer_tool = mcp._tool_manager._tools["get_answer_details"].fn
+        question_details_request = QuestionAnswersFetchRequest(question_id=123)
+        details_tool = mcp._tool_manager._tools["fetch_question_answers"].fn
 
         import asyncio
 
         async def test_errors():
-            question_result = await question_tool(question_request)
-            answer_result = await answer_tool(answer_request)
+            search_result = await search_tool(question_search_request)
+            details_result = await details_tool(question_details_request)
 
-            assert "error" in question_result
-            assert "error" in answer_result
+            # search_questions returns empty list on error
+            assert isinstance(search_result, list)
+            assert len(search_result) == 0
 
-            assert question_result["error"] == "Test error"
-            assert answer_result["error"] == "Test error"
+            # fetch_question_answers returns basic QuestionItem on error
+            assert isinstance(details_result, QuestionItem)
+            assert details_result.question_id == 123
 
         asyncio.run(test_errors())

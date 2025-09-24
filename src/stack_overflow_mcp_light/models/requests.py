@@ -66,13 +66,20 @@ class QuestionSearchRequest(BaseRequest):
     )
 
 
-class QuestionDetailsRequest(BaseModel):
-    """Request model for getting question details."""
+class QuestionAnswersFetchRequest(BaseModel):
+    """Request model for fetching question and answers."""
 
     question_id: int = Field(..., ge=1, description="Question ID")
-    include_body: bool = Field(default=True, description="Include question body")
-    include_comments: bool = Field(default=False, description="Include comments")
-    include_answers: bool = Field(default=True, description="Include answers")
+    sort: AnswerSort = Field(
+        default=AnswerSort.VOTES, description="Answer sort criteria"
+    )
+    order: SortOrder = Field(default=SortOrder.DESC, description="Sort order")
+    page_size: int = Field(
+        default=30,
+        ge=1,
+        le=100,
+        description="Maximum number of answers to return (1-100)",
+    )
 
 
 class QuestionsByTagRequest(BaseRequest):
@@ -82,11 +89,3 @@ class QuestionsByTagRequest(BaseRequest):
     sort: QuestionSort = Field(
         default=QuestionSort.ACTIVITY, description="Sort criteria"
     )
-
-
-class AnswerDetailsRequest(BaseModel):
-    """Request model for getting answer details."""
-
-    answer_id: int = Field(..., ge=1, description="Answer ID")
-    include_body: bool = Field(default=True, description="Include answer body")
-    include_comments: bool = Field(default=False, description="Include comments")

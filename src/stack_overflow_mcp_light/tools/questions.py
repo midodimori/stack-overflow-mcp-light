@@ -1,8 +1,9 @@
 """Questions client for Stack Exchange API operations."""
 
-from typing import Any, Dict, Optional
+from typing import Optional
 
 from stack_overflow_mcp_light.logging_config import get_logger
+from stack_overflow_mcp_light.models.responses import AnswerItem, QuestionItem
 from stack_overflow_mcp_light.tools.base_client import BaseStackExchangeClient
 
 logger = get_logger(__name__)
@@ -30,7 +31,7 @@ class QuestionsClient(BaseStackExchangeClient):
         order: str = "desc",
         page: int = 1,
         page_size: int = 30,
-    ) -> Dict[str, Any]:
+    ) -> list[QuestionItem]:
         """
         Search questions using advanced search parameters.
 
@@ -50,7 +51,7 @@ class QuestionsClient(BaseStackExchangeClient):
             page_size: Items per page
 
         Returns:
-            Search results with questions
+            List of question responses
         """
         params = {"sort": sort, "order": order}
 
@@ -90,81 +91,100 @@ class QuestionsClient(BaseStackExchangeClient):
 
             logger.info(f"Searching questions with params: {params}")
 
-            return await self._paginated_request(endpoint, params, page, page_size)
+            raw_response = await self._paginated_request(
+                endpoint, params, page, page_size
+            )
+
+            # Transform the response to our model
+            question_items = []
+            if "items" in raw_response:
+                for item in raw_response["items"]:
+                    question_item = QuestionItem.model_validate(item)
+                    question_items.append(question_item)
+
+            return question_items
 
         except Exception as e:
             logger.error(f"Error searching questions: {e}")
             raise
 
-    async def get_question_details(
+    async def fetch_question_answers(
         self,
         question_id: int,
-        include_body: bool = True,
-        include_comments: bool = False,
-        include_answers: bool = True,
-    ) -> Dict[str, Any]:
+        sort: str = "votes",
+        order: str = "desc",
+        page_size: int = 30,
+    ) -> QuestionItem:
         """
-        Get detailed information about a specific question.
+        Fetch a question, including answers with body content.
 
         Args:
             question_id: Question ID
-            include_body: Include question body
-            include_comments: Include comments
-            include_answers: Include answers
+            sort: Sort criteria for answers ("activity", "votes", "creation")
+            order: Sort order ("asc" or "desc")
+            page_size: Maximum number of answers to return (1-100)
 
         Returns:
-            Question details
+            QuestionItem with answers field populated with body content, sorted as requested
         """
-        params = {}
-
-        # Build filter parameter for what to include
-        filters = []
-        if include_body:
-            filters.append("withbody")
-        if include_comments:
-            filters.append("comments")
-        if include_answers:
-            filters.append("answers")
-
-        if filters:
-            # Use a custom filter or default that includes body
-            params["filter"] = "!nKzQUR3Egv"  # Includes body, answers, and comments
-
         try:
             endpoint = f"/questions/{question_id}"
 
             logger.info(f"Getting question details for ID: {question_id}")
 
-            result = await self._make_request(endpoint, params)
+            result = await self._make_request(endpoint, {})
 
-            # If we want answers, also get them separately if not included
-            if include_answers and "items" in result and len(result["items"]) > 0:
-                question = result["items"][0]
-                if "answers" not in question or not question["answers"]:
-                    # Get answers separately
-                    answers_result = await self._make_request(
-                        f"/questions/{question_id}/answers",
-                        {"filter": "!nKzQUR3Egv" if include_body else None},
+            if "items" not in result or len(result["items"]) == 0:
+                # Return basic question item if not found
+                return QuestionItem(question_id=question_id)
+
+            question_data = result["items"][0]
+
+            # Create question item from the basic data
+            question_item = QuestionItem.model_validate(question_data)
+
+            # Always get answers with detailed content including body
+            answer_items = []
+
+            # Get answers for the question with body content and sorting
+            answers_result = await self._make_request(
+                f"/questions/{question_id}/answers",
+                {
+                    "filter": "withbody",
+                    "sort": sort,
+                    "order": order,
+                    "pagesize": page_size,
+                },
+            )
+
+            if "items" in answers_result:
+                for answer in answers_result["items"]:
+                    answer_item = AnswerItem(
+                        answer_id=answer.get("answer_id"),
+                        is_accepted=answer.get("is_accepted"),
+                        score=answer.get("score"),
+                        body=answer.get("body"),
                     )
-                    if "items" in answers_result:
-                        question["answers"] = answers_result["items"]
+                    answer_items.append(answer_item)
 
-            return result
+            question_item.answers = answer_items
+
+            return question_item
 
         except Exception as e:
             logger.error(f"Error getting question details: {e}")
             raise
 
-    async def get_questions_by_tag(
+    async def search_questions_by_tag(
         self,
         tag: str,
         sort: str = "activity",
         order: str = "desc",
         page: int = 1,
         page_size: int = 30,
-    ) -> Dict[str, Any]:
+    ) -> list[QuestionItem]:
         """
-        Get questions that have a specific tag.
+        Search questions that have a specific tag.
 
         Args:
             tag: Tag name
@@ -174,49 +194,26 @@ class QuestionsClient(BaseStackExchangeClient):
             page_size: Items per page
 
         Returns:
-            Questions with the specified tag
+            List of question items
         """
         params = {"tagged": tag, "sort": sort, "order": order}
 
         try:
             logger.info(f"Getting questions for tag: {tag}")
 
-            return await self._paginated_request("/questions", params, page, page_size)
+            raw_response = await self._paginated_request(
+                "/questions", params, page, page_size
+            )
+
+            # Transform the response to our model
+            question_items = []
+            if "items" in raw_response:
+                for item in raw_response["items"]:
+                    question_item = QuestionItem.model_validate(item)
+                    question_items.append(question_item)
+
+            return question_items
 
         except Exception as e:
             logger.error(f"Error getting questions by tag: {e}")
-            raise
-
-    async def get_question_answers(
-        self,
-        question_id: int,
-        sort: str = "votes",
-        order: str = "desc",
-        page: int = 1,
-        page_size: int = 30,
-    ) -> Dict[str, Any]:
-        """
-        Get answers for a specific question.
-
-        Args:
-            question_id: Question ID
-            sort: Sort criteria
-            order: Sort order
-            page: Page number
-            page_size: Items per page
-
-        Returns:
-            Answers for the question
-        """
-        params = {"sort": sort, "order": order, "filter": "!nKzQUR3Egv"}  # Include body
-
-        try:
-            endpoint = f"/questions/{question_id}/answers"
-
-            logger.info(f"Getting answers for question ID: {question_id}")
-
-            return await self._paginated_request(endpoint, params, page, page_size)
-
-        except Exception as e:
-            logger.error(f"Error getting question answers: {e}")
             raise

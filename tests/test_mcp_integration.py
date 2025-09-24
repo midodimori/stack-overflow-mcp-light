@@ -19,14 +19,9 @@ class TestMCPServerIntegration:
     def test_all_tools_registered(self):
         """Test that all expected tools are registered with the MCP server."""
         expected_tools = {
-            # Question tools
             "search_questions",
-            "get_question_details",
-            "get_questions_by_tag",
-            "get_question_answers",
-            # Answer tools
-            "get_answer_details",
-            "get_top_answers",
+            "fetch_question_answers",
+            "search_questions_by_tag",
         }
 
         # Get registered tool names using the correct FastMCP API

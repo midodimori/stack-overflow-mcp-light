@@ -64,24 +64,24 @@ async def test_all_tools():
     )
     print_result("search_questions", result_search_questions)
 
-    # Test 3: get_question_details (using a known question ID)
-    print("\n🔧 3. Testing get_question_details...")
+    # Test 3: fetch_question_answers (using a known question ID)
+    print("\n🔧 3. Testing fetch_question_answers...")
     question_id = 11227809  # From top answers result
-    result_get_question_details = await questions_client.get_question_details(
+    result_fetch_question_answers = await questions_client.fetch_question_answers(
         question_id=question_id,
         include_body=True,
         include_answers=True
     )
-    print_result("get_question_details", result_get_question_details)
+    print_result("fetch_question_answers", result_fetch_question_answers)
 
-    # Test 4: get_questions_by_tag
-    print("\n🔧 4. Testing get_questions_by_tag...")
-    result_get_questions_by_tag = await questions_client.get_questions_by_tag(
+    # Test 4: search_questions_by_tag
+    print("\n🔧 4. Testing search_questions_by_tag...")
+    result_search_questions_by_tag = await questions_client.search_questions_by_tag(
         tag="python",
         page=1,
         page_size=3
     )
-    print_result("get_questions_by_tag", result_get_questions_by_tag)
+    print_result("search_questions_by_tag", result_search_questions_by_tag)
 
     # Test 5: get_question_answers
     print("\n🔧 5. Testing get_question_answers...")
