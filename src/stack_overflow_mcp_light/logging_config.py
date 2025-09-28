@@ -8,7 +8,12 @@ from typing import Optional
 
 def suppress_fastmcp_logging() -> None:
     """Suppress fastmcp internal logging messages."""
-    for logger_name in ["FastMCP", "FastMCP.fastmcp.server.server"]:
+    for logger_name in [
+        "FastMCP",
+        "FastMCP.fastmcp.server.server",
+        "fastmcp.server.server",
+        "fastmcp",
+    ]:
         logger = logging.getLogger(logger_name)
         logger.setLevel(logging.ERROR)
         logger.handlers.clear()

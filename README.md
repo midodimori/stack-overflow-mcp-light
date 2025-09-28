@@ -103,8 +103,7 @@ Add to your Claude Desktop `claude_desktop_config.json`:
   "mcpServers": {
     "stack-overflow": {
       "command": "uv",
-      "args": ["run", "stack-overflow-mcp-light"],
-      "cwd": "/path/to/stack-overflow-mcp-light",
+      "args": ["run", "--directory", "/path/to/stack-overflow-mcp-light", "stack-overflow-mcp-light"],
       "env": {
         "STACK_EXCHANGE_API_KEY": "your_api_key_here",
         "STACK_OVERFLOW_MCP_SHOW_LOGS": "true"
